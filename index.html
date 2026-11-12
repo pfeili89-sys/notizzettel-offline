@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Notizzettel</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#fff7cc">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:#f6f3ea;color:#222;padding:16px 12px 40px}
+header{max-width:760px;margin:0 auto}
+h1{margin:4px 0 2px;font-size:28px}
+.sub{color:#666;margin:0 0 14px}
+.card{background:#fff;border-radius:14px;padding:14px;box-shadow:0 2px 10px rgba(0,0,0,.08);max-width:760px;margin:0 auto 14px}
+label{font-weight:700;font-size:14px}
+input,textarea{width:100%;border:1px solid #ddd;border-radius:10px;padding:11px;font-size:16px;margin:6px 0 10px;background:#fff}
+textarea{min-height:70px;resize:vertical}
+.row{display:flex;gap:10px;align-items:center}
+.row input{width:90px}
+button{border:0;border-radius:10px;padding:11px 14px;font-size:15px;font-weight:700;cursor:pointer}
+.primary{background:#222;color:#fff;width:100%}
+.grid{max-width:760px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:560px){.grid{grid-template-columns:1fr}}
+.note{position:relative;border-radius:6px;padding:16px 14px 14px;min-height:150px;overflow:hidden;box-shadow:0 6px 18px rgba(0,0,0,.18);transition:background .3s}
+.note h3{margin:0 0 6px;font-size:18px;line-height:1.2;position:relative;z-index:2}
+.note p{white-space:pre-wrap;margin:0 0 28px;line-height:1.45;position:relative;z-index:2}
+.meta{position:absolute;left:14px;bottom:44px;font-size:12px;opacity:.75;z-index:2}
+.actions{position:absolute;left:12px;right:12px;bottom:10px;display:flex;gap:8px;z-index:3}
+.actions button{flex:1;padding:8px;font-size:13px;background:rgba(255,255,255,.85);color:#222}
+.actions button.done{background:#222;color:#fff}
+.note.done{filter:grayscale(1);opacity:.75}
+.note.done h3,.note.done p{text-decoration:line-through}
+.burning{color:#fff;background:#1a0800 !important}
+/* echtes Feuer: nur weiche Blobs, keine Dreiecke */
+.fire{position:absolute;inset:-30px -10px auto -10px;height:120px;pointer-events:none;z-index:1;overflow:visible}
+.blob{position:absolute;bottom:0;border-radius:50% 55% 45% 60% / 60% 50% 60% 45%;filter:blur(10px);opacity:.9;animation:flick 0.9s ease-in-out infinite alternate}
+.b1{left:2%;width:48%;height:95px;background:radial-gradient(circle at 50% 70%, #ff2d00, #b30f00 60%, transparent 72%)}
+.b2{left:28%;width:52%;height:115px;background:radial-gradient(circle at 50% 75%, #ff6a00, #e63a00 55%, transparent 72%);animation-duration:.7s}
+.b3{left:18%;width:38%;height:80px;background:radial-gradient(circle at 50% 75%, #ffd23d, #ff8a00 60%, transparent 75%);filter:blur(7px);animation-duration:.55s}
+.b4{left:38%;width:26%;height:55px;background:radial-gradient(circle at 50% 75%, #fff6b0, #ffd23d 60%, transparent 75%);filter:blur(5px);animation-duration:.45s}
+@keyframes flick{from{transform:scaleY(1) scaleX(1) translateX(0)}to{transform:scaleY(1.18) scaleX(.92) translateX(6px)}}
+.embers{position:absolute;inset:0;pointer-events:none;z-index:2}
+.embers i{position:absolute;bottom:18px;width:6px;height:6px;border-radius:50%;background:#ffdd55;filter:blur(1px);box-shadow:0 0 10px 3px #ff8a00;animation:rise 1.6s linear infinite}
+.embers i:nth-child(1){left:20%}.embers i:nth-child(2){left:55%;animation-delay:.5s}.embers i:nth-child(3){left:75%;animation-delay:.9s}
+@keyframes rise{from{transform:translateY(0);opacity:1}to{transform:translateY(-90px);opacity:0}}
+.burnt{position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at 0 0, rgba(0,0,0,.85), transparent 38%),radial-gradient(circle at 100% 0, rgba(0,0,0,.8), transparent 36%),radial-gradient(circle at 0 100%, rgba(0,0,0,.75), transparent 40%),radial-gradient(circle at 100% 100%, rgba(0,0,0,.8), transparent 38%);z-index:1}
+.glow{box-shadow:0 0 0 3px #ff4d00, 0 0 35px 8px rgba(255,80,0,.75), 0 10px 30px rgba(0,0,0,.35) !important}
+.badge{position:absolute;top:8px;right:8px;background:#ff2d00;color:#fff;font-size:11px;font-weight:800;padding:5px 8px;border-radius:999px;z-index:4}
+.hint{max-width:760px;margin:10px auto 0;color:#777;font-size:13px;text-align:center}
+</style>
+</head>
+<body>
+<header><h1>Notizzettel 🔥</h1><p class="sub">Weiß/gelb → feuerrot → brennt, wenn nicht erledigt.</p></header>
+<div class="card">
+  <label>Brennzeit (Tage)</label>
+  <div class="row"><input id="days" type="number" min="1" value="30"><span>z.B. 30 = 1 Monat</span></div>
+  <label>Titel</label><input id="title" placeholder="z.B. Steuer machen">
+  <label>Text</label><textarea id="text" placeholder="Was muss noch fertig werden?"></textarea>
+  <button class="primary" onclick="addNote()">Anpinnen</button>
+</div>
+<div id="list" class="grid"></div>
+<p class="hint">Offline: Notizen bleiben auf diesem Handy gespeichert.</p>
+<script>
+let notes = JSON.parse(localStorage.getItem('notizen')||'[]');
+let days = parseInt(localStorage.getItem('brennzeit')||'30');
+document.getElementById('days').value = days;
+document.getElementById('days').addEventListener('change', e=>{
+  days = Math.max(1, parseInt(e.target.value)||30);
+  localStorage.setItem('brennzeit', days); render();
+});
+if(notes.length===0){
+  const now = Date.now();
+  notes = [
+    {t:'Einkaufen', x:'Milch, Brot, Kaffee', c: now, done:false},
+    {t:'Steuer machen', x:'Belege sortieren und abgeben', c: now - 15*86400000, done:false},
+    {t:'TÜV Termin', x:'Schon längst überfällig!', c: now - 35*86400000, done:false},
+  ];
+  save();
+}
+function save(){ localStorage.setItem('notizen', JSON.stringify(notes)); }
+function addNote(){
+  const t=document.getElementById('title').value.trim();
+  const x=document.getElementById('text').value.trim();
+  if(!t) return alert('Bitte Titel eingeben');
+  notes.unshift({t, x, c: Date.now(), done:false}); save();
+  document.getElementById('title').value=''; document.getElementById('text').value='';
+  render();
+}
+function ageDays(c){ return (Date.now()-c)/86400000; }
+// Farbe: weiß/gelb -> feuerrot, fließend
+function color(p){
+  // p 0..1 : 0 = #fff7cc, 1 = #ff1e00
+  const a=[255,247,204], b=[255,30,0];
+  const r=Math.round(a[0]+(b[0]-a[0])*p), g=Math.round(a[1]+(b[1]-a[1])*p), bl=Math.round(a[2]+(b[2]-a[2])*p);
+  return `rgb(${r},${g},${bl})`;
+}
+function render(){
+  const el=document.getElementById('list'); el.innerHTML='';
+  notes.forEach((n,i)=>{
+    const p=Math.min(1, ageDays(n.c)/days);
+    const burning = p>=1 && !n.done;
+    const d=document.createElement('div');
+    d.className='note'+(burning?' burning glow':'')+(n.done?' done':'');
+    d.style.background = burning ? '#1a0800' : color(p);
+    if(burning){
+      d.innerHTML=`<div class="fire"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div><div class="blob b4"></div></div><div class="burnt"></div><div class="embers"><i></i><i></i><i></i></div><div class="badge">BRENNT!</div>`;
+    }
+    d.innerHTML += `<h3>${escapeHtml(n.t)}</h3><p>${escapeHtml(n.x||'')}</p><div class="meta">${n.done?'Erledigt ✓':(burning?'Jetzt fertig machen!':(p>=1?'':`Noch ${Math.ceil(days-ageDays(n.c))} Tage`))} • vor ${Math.floor(ageDays(n.c))} Tagen</div><div class="actions"><button class="done" onclick="toggle(${i})">${n.done?'Wieder öffnen':'Erledigt'}</button><button onclick="del(${i})">Löschen</button></div>`;
+    el.appendChild(d);
+  });
+}
+function escapeHtml(s){ return s.replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function toggle(i){ notes[i].done=!notes[i].done; save(); render(); }
+function del(i){ if(confirm('Notiz löschen?')){ notes.splice(i,1); save(); render(); } }
+render();
+if('serviceWorker' in navigator){ navigator.serviceWorker.register('sw.js'); }
+</script>
+</body>
+</html>
