@@ -1,0 +1,161 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --surface: #f3e7d3;
+  --ink: #2c2118;
+  --muted: #746356;
+  --paper: #fffdf4;
+  --tape: rgba(255, 236, 150, .78);
+  --accent: #a83223;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --surface: #241a12;
+    --ink: #f2e6d5;
+    --muted: #c4b29f;
+    --paper: #fffdf4;
+    --accent: #ff8a70;
+  }
+}
+
+* { box-sizing: border-box; }
+html, body, #root { min-height: 100%; }
+body {
+  margin: 0;
+  color: var(--ink);
+  background:
+    radial-gradient(circle at 18% 8%, rgba(255,255,255,.22), transparent 28%),
+    repeating-linear-gradient(92deg, rgba(0,0,0,.055) 0 2px, transparent 2px 19px),
+    repeating-linear-gradient(1deg, rgba(255,255,255,.06) 0 8px, transparent 8px 31px),
+    linear-gradient(112deg, #9a6b43, #7e5231 46%, #66401f);
+  font-family: "Patrick Hand", "Segoe Print", cursive;
+}
+button, input { font: inherit; }
+button { cursor: pointer; }
+button:disabled { cursor: wait; opacity: .55; }
+
+.hand { font-family: "Caveat", "Segoe Print", cursive; }
+.paper {
+  background-color: var(--paper);
+  background-image: repeating-linear-gradient(to bottom, transparent 0, transparent 47px, rgba(79,134,176,.20) 48px);
+  box-shadow: 0 24px 55px rgba(0,0,0,.38), 0 4px 10px rgba(0,0,0,.22);
+  clip-path: polygon(0 13px, 3% 7px, 7% 15px, 11% 6px, 16% 14px, 22% 8px, 28% 16px, 34% 7px, 40% 15px, 46% 6px, 52% 14px, 58% 8px, 64% 16px, 70% 7px, 76% 15px, 82% 6px, 88% 14px, 93% 8px, 100% 15px, 100% 100%, 98% 99%, 96% 100%, 0 100%);
+}
+.tape {
+  background: linear-gradient(90deg, rgba(255,255,255,.25), transparent 35%, rgba(255,255,255,.08) 70%, rgba(0,0,0,.06));
+  background-color: var(--tape);
+  box-shadow: 0 2px 4px rgba(0,0,0,.15);
+  backdrop-filter: blur(1px);
+}
+.task-row { transition: background-color .25s ease, transform .2s ease; }
+.task-row:focus-within { outline: 2px solid rgba(255,255,255,.85); outline-offset: 2px; }
+input[type="date"] { color-scheme: light; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+
+/* ---------- Brennen ab 30 Tagen ---------- */
+.burning-row {
+  border: 2px solid #120806;
+  box-shadow:
+    inset 0 0 0 2px rgba(0,0,0,.65),
+    inset 0 0 22px 4px rgba(0,0,0,.72),
+    0 0 0 1px rgba(255,110,0,.35),
+    0 0 22px rgba(255,95,0,.48),
+    0 6px 18px rgba(0,0,0,.32);
+  clip-path: polygon(0 4px, 4% 0, 9% 5px, 14% 1px, 19% 6px, 26% 0, 32% 5px, 39% 1px, 46% 6px, 54% 0, 61% 5px, 68% 1px, 75% 6px, 82% 0, 88% 5px, 94% 1px, 100% 6px, 99% 34%, 100% 38%, 98% 62%, 100% 68%, 99% 94%, 96% 100%, 90% 97%, 83% 100%, 76% 96%, 68% 100%, 60% 97%, 52% 100%, 45% 96%, 37% 100%, 29% 97%, 21% 100%, 14% 96%, 7% 100%, 0 97%, 1% 68%, 0 62%, 2% 38%, 0 32%);
+  animation: burn-glow 1.6s ease-in-out infinite alternate;
+}
+@keyframes burn-glow {
+  from { box-shadow: inset 0 0 0 2px rgba(0,0,0,.65), inset 0 0 22px 4px rgba(0,0,0,.72), 0 0 0 1px rgba(255,110,0,.3), 0 0 16px rgba(255,95,0,.35), 0 6px 18px rgba(0,0,0,.32); }
+  to { box-shadow: inset 0 0 0 2px rgba(0,0,0,.7), inset 0 0 26px 6px rgba(0,0,0,.78), 0 0 0 1px rgba(255,140,0,.5), 0 0 28px rgba(255,95,0,.62), 0 6px 18px rgba(0,0,0,.32); }
+}
+.burn-spots {
+  position: absolute; inset: 0; pointer-events: none; border-radius: inherit; z-index: 0;
+  background:
+    radial-gradient(circle at 8% 12%, rgba(0,0,0,.88) 0 9px, transparent 11px),
+    radial-gradient(circle at 92% 18%, rgba(0,0,0,.82) 0 13px, transparent 15px),
+    radial-gradient(circle at 96% 82%, rgba(0,0,0,.9) 0 11px, transparent 13px),
+    radial-gradient(circle at 4% 88%, rgba(0,0,0,.78) 0 10px, transparent 12px),
+    radial-gradient(circle at 55% 2%, rgba(0,0,0,.55) 0 16px, transparent 18px),
+    radial-gradient(circle at 42% 98%, rgba(0,0,0,.6) 0 14px, transparent 16px);
+}
+.burn-badge, .pre-burn-badge {
+  display: inline-flex; align-items: center; gap: 4px; margin-bottom: 5px;
+  padding: 2px 7px; border-radius: 999px; font-size: 11px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase;
+}
+.burn-badge { background: #1a0a04; color: #ffb02a; box-shadow: 0 0 10px rgba(255,120,0,.65); animation: badge-flicker .9s ease-in-out infinite alternate; }
+.pre-burn-badge { background: rgba(255,120,0,.18); color: #7c1d05; border: 1px solid rgba(255,120,0,.45); }
+@keyframes badge-flicker { from { box-shadow: 0 0 6px rgba(255,120,0,.45); } to { box-shadow: 0 0 14px rgba(255,170,0,.85); } }
+.burnt-text {
+  color: #fff2d8 !important;
+  text-shadow: 0 0 2px #1a0a04, 0 0 9px rgba(255,120,0,.95), 0 0 18px rgba(255,70,0,.55), 1px 1px 0 rgba(0,0,0,.55);
+  animation: char-wobble 2.4s ease-in-out infinite alternate;
+}
+@keyframes char-wobble {
+  from { transform: translateY(0) skewX(0deg); }
+  to { transform: translateY(-.4px) skewX(-.35deg); }
+}
+
+/* Flammen unten / an den Rändern */
+.flame-layer { position: absolute; left: 6px; right: 6px; bottom: -2px; height: 24px; pointer-events: none; display: flex; justify-content: space-between; align-items: flex-end; z-index: 2; }
+.flame {
+  display: block; width: 18px; height: 20px; flex: 0 0 auto;
+  background: radial-gradient(circle at 50% 78%, #fff6a8 0 22%, #ffb02a 38%, #ff6a00 62%, #d92a00 82%, transparent 86%);
+  border-radius: 50% 50% 50% 50% / 62% 62% 38% 38%;
+  transform-origin: 50% 100%;
+  filter: drop-shadow(0 0 6px rgba(255,140,0,.9));
+  animation: flicker .55s ease-in-out infinite alternate;
+}
+.flame.f2 { height: 28px; width: 21px; animation-duration: .42s; animation-delay: .08s; }
+.flame.f3 { height: 16px; width: 15px; animation-duration: .68s; animation-delay: .15s; }
+.flame.f4 { height: 25px; width: 19px; animation-duration: .48s; animation-delay: .03s; }
+.flame.f5 { height: 18px; width: 16px; animation-duration: .6s; animation-delay: .2s; }
+@keyframes flicker {
+  0% { transform: scale(1) rotate(-2deg) translateY(0); opacity: .92; }
+  50% { transform: scale(1.14, 1.22) rotate(2.5deg) translateY(-1px); opacity: 1; }
+  100% { transform: scale(.92, 1.05) rotate(-3deg) translateY(1px); opacity: .88; }
+}
+.burning-row:hover .flame, .burning-row:active .flame { animation-duration: .28s; transform: scale(1.18); }
+.burning-row:hover .flame.f2, .burning-row:active .flame.f2 { height: 32px; }
+.burning-row:hover .flame.f4, .burning-row:active .flame.f4 { height: 29px; }
+
+/* Funken / Glut-Punkte, die aufsteigen */
+.spark-layer { position: absolute; inset: 0; pointer-events: none; overflow: visible; z-index: 2; }
+.spark { position: absolute; bottom: 6px; width: 4px; height: 4px; border-radius: 999px; background: #ffd54a; box-shadow: 0 0 8px 2px rgba(255,180,0,.95); opacity: 0; animation: spark-rise 1.8s ease-in infinite; }
+.spark.sp1 { left: 18%; animation-delay: 0s; }
+.spark.sp2 { left: 42%; animation-delay: .5s; animation-duration: 2.1s; }
+.spark.sp3 { left: 64%; animation-delay: .9s; animation-duration: 1.6s; }
+.spark.sp4 { left: 82%; animation-delay: 1.2s; animation-duration: 2.3s; }
+@keyframes spark-rise {
+  0% { transform: translate(0, 0) scale(1); opacity: 0; }
+  15% { opacity: 1; }
+  100% { transform: translate(10px, -58px) scale(.35); opacity: 0; }
+}
+
+/* Rauch */
+.smoke-layer { position: absolute; left: 0; right: 0; top: -8px; height: 34px; pointer-events: none; z-index: 2; }
+.smoke { position: absolute; top: 22px; width: 22px; height: 22px; border-radius: 999px; background: radial-gradient(circle, rgba(120,115,110,.5), rgba(120,115,110,0) 70%); filter: blur(2px); opacity: 0; animation: smoke-rise 3.2s ease-out infinite; }
+.smoke.s1 { left: 22%; animation-delay: 0s; }
+.smoke.s2 { left: 52%; animation-delay: 1.1s; animation-duration: 3.8s; }
+.smoke.s3 { left: 74%; animation-delay: 2s; animation-duration: 3.4s; }
+.smoke-small { top: 16px; width: 16px; height: 16px; }
+@keyframes smoke-rise {
+  0% { transform: translate(0, 8px) scale(.6); opacity: 0; }
+  25% { opacity: .55; }
+  100% { transform: translate(14px, -34px) scale(1.7); opacity: 0; }
+}
+
+/* Vorwarnung 80–89 Tage: erste Glut + etwas Rauch */
+.pre-burn-row { border: 1.5px solid rgba(120,30,0,.45); box-shadow: inset 0 0 16px rgba(255,110,0,.18), 0 0 12px rgba(255,110,0,.18); }
+.ember-layer { position: absolute; inset: 0; pointer-events: none; z-index: 1; }
+.ember { position: absolute; bottom: 4px; width: 6px; height: 6px; border-radius: 999px; background: #ff7a00; box-shadow: 0 0 8px 2px rgba(255,120,0,.85); animation: ember-pulse 1.4s ease-in-out infinite alternate; }
+.ember.e1 { left: 28%; }
+.ember.e2 { left: 58%; animation-delay: .4s; }
+.ember.e3 { left: 82%; animation-delay: .8s; }
+@keyframes ember-pulse { from { opacity: .35; transform: scale(.8); } to { opacity: 1; transform: scale(1.25); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .burning-row, .flame, .spark, .smoke, .ember, .burnt-text, .burn-badge { animation: none !important; }
+}
